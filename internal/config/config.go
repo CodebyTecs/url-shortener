@@ -1,18 +1,25 @@
 package config
 
+import (
+	"log"
+	"os"
+
+	"github.com/ilyakaznacheev/cleanenv"
+)
+
 type Config struct {
-	Env string `yaml:"env" env-default:"local"`
-	StoragePath string `yaml:"storage_path" env-required:"true"`
-	HTTPserver HTTPserver `yaml:"http_server"`
+	Env         string     `yaml:"env" env-default:"local"`
+	StoragePath string     `yaml:"storage_path" env-required:"true"`
+	HTTPserver  HTTPserver `yaml:"http_server"`
 }
 
 type HTTPserver struct {
-	Address string `yaml:"address" env-default:"localhost:8082"`
-	Timeout string `yaml:"timeout" env-default:"4s"`
+	Address     string `yaml:"address" env-default:"localhost:8082"`
+	Timeout     string `yaml:"timeout" env-default:"4s"`
 	IdleTimeout string `yaml:"idle_timeout" env-default:"60s"`
 }
 
-func MustLoad() *Config{
+func MustLoad() *Config {
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
 		log.Fatal("CONFIG_PATH is not set")
@@ -21,7 +28,7 @@ func MustLoad() *Config{
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Fatalf("config file does not exist: %s", configPath)
 	}
-	
+
 	var cfg Config
 
 	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
@@ -29,5 +36,5 @@ func MustLoad() *Config{
 	}
 
 	return &cfg
-	
+
 }
